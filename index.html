@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road Trip — Cairns → Brisbane</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1923;
+  --surface: #162030;
+  --surface2: #1d2d3f;
+  --border: rgba(255,255,255,0.07);
+  --ocean: #00b4d8;
+  --ocean-dim: rgba(0,180,216,0.15);
+  --coral: #ff6b6b;
+  --sun: #ffd166;
+  --forest: #06d6a0;
+  --purple: #c77dff;
+  --text: #e8f4f8;
+  --text-dim: #7a9bb5;
+  --radius: 16px;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+.hero {
+  position: relative;
+  padding: 64px 32px 80px;
+  background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1e30 100%);
+  overflow: hidden;
+  text-align: center;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+  top: -200px; right: -100px;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6,214,160,0.08) 0%, transparent 70%);
+  bottom: -100px; left: -100px;
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ocean);
+  margin-bottom: 20px;
+  background: rgba(0,180,216,0.1);
+  border: 1px solid rgba(0,180,216,0.2);
+  padding: 6px 16px;
+  border-radius: 100px;
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(42px, 8vw, 88px);
+  font-weight: 800;
+  line-height: 0.95;
+  margin-bottom: 24px;
+  letter-spacing: -2px;
+}
+.hero h1 .accent { color: var(--ocean); }
+.hero h1 .small { font-size: 0.5em; display: block; color: var(--text-dim); font-weight: 400; letter-spacing: 0; margin-top: 8px; }
+
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.meta-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.meta-pill strong { color: var(--text); }
+
+/* PRIORITY BADGES */
+.priorities {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.priority-badge {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.p-croc { background: rgba(255,107,107,0.15); color: var(--coral); border: 1px solid rgba(255,107,107,0.3); }
+.p-whit { background: rgba(0,180,216,0.15); color: var(--ocean); border: 1px solid rgba(0,180,216,0.3); }
+.p-casc { background: rgba(6,214,160,0.12); color: var(--forest); border: 1px solid rgba(6,214,160,0.2); }
+.p-faun { background: rgba(255,209,102,0.12); color: var(--sun); border: 1px solid rgba(255,209,102,0.2); }
+.p-plage { background: rgba(199,125,255,0.12); color: var(--purple); border: 1px solid rgba(199,125,255,0.2); }
+
+/* PROGRESS BAR */
+.progress-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,25,35,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.progress-bar::-webkit-scrollbar { display: none; }
+
+.pb-item { display: flex; align-items: center; gap: 0; flex-shrink: 0; cursor: pointer; }
+
+.pb-dot {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  transition: all .3s;
+  position: relative;
+}
+.pb-dot:hover { border-color: var(--ocean); }
+.pb-dot.active { border-color: var(--ocean); background: var(--ocean); color: #000; }
+.pb-dot.done { border-color: var(--forest); background: var(--forest); color: #000; }
+
+.pb-line { width: 28px; height: 2px; background: var(--border); flex-shrink: 0; transition: background .3s; }
+.pb-line.done { background: var(--forest); }
+
+.pb-tooltip {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 10px;
+  white-space: nowrap;
+  color: var(--text);
+  display: none;
+  z-index: 10;
+}
+.pb-dot.active .pb-tooltip,
+.pb-dot:hover .pb-tooltip { display: block; }
+
+/* MAIN */
+.main { max-width: 920px; margin: 0 auto; padding: 0 20px 100px; }
+
+/* STATS */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 40px 0;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  transition: border-color .3s;
+}
+.stat-card:hover { border-color: rgba(0,180,216,0.3); }
+.stat-card .stat-emoji { font-size: 26px; margin-bottom: 8px; }
+.stat-card .stat-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.stat-card .stat-label { font-size: 11px; color: var(--text-dim); }
+
+/* SECTION TITLE */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 48px 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* DAY CARDS */
+.day-card {
+  margin: 20px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .3s, box-shadow .3s;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeUp .4s ease forwards;
+}
+.day-card:hover { border-color: rgba(0,180,216,0.2); }
+.day-card.active-day { border-color: var(--ocean); box-shadow: 0 0 0 1px rgba(0,180,216,0.2); }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.day-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.day-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.day-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ocean);
+  background: var(--ocean-dim);
+  border: 1px solid rgba(0,180,216,0.25);
+  padding: 4px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.day-date {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.day-title-block h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+.day-title-block .route-line {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.day-title-block .km-badge {
+  font-size: 11px;
+  background: rgba(255,209,102,0.1);
+  color: var(--sun);
+  border: 1px solid rgba(255,209,102,0.2);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.day-toggle {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  transition: transform .3s, background .2s;
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+.day-card.open .day-toggle { transform: rotate(180deg); background: var(--ocean-dim); color: var(--ocean); }
+
+.day-body {
+  display: none;
+  padding: 4px 24px 24px;
+  border-top: 1px solid var(--border);
+}
+.day-card.open .day-body { display: block; }
+
+/* TIMELINE STOPS */
+.stops-timeline { position: relative; padding-left: 20px; margin-top: 20px; }
+.stops-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 20px; bottom: 20px;
+  width: 2px;
+  background: var(--border);
+}
+
+.stop {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  align-items: start;
+  margin-bottom: 20px;
+  position: relative;
+}
+.stop:last-child { margin-bottom: 0; }
+
+.stop-icon-wrap {
+  position: relative;
+  z-index: 1;
+}
+.stop-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* STOP HIGHLIGHT (priority) */
+.stop.priority .stop-icon {
+  box-shadow: 0 0 0 2px var(--ocean);
+}
+.stop.priority .stop-content h4::after {
+  content: ' ⭐';
+  font-size: 12px;
+}
+
+.stop-content h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.stop-content p { font-size: 13px; color: var(--text-dim); line-height: 1.65; }
+
+.stop-time {
+  font-size: 11px;
+  color: var(--ocean);
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.stop-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.tag {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.tag-plage { background: rgba(0,180,216,0.12); color: var(--ocean); border: 1px solid rgba(0,180,216,0.2); }
+.tag-cascade { background: rgba(6,214,160,0.12); color: var(--forest); border: 1px solid rgba(6,214,160,0.2); }
+.tag-nature { background: rgba(6,214,160,0.12); color: var(--forest); border: 1px solid rgba(6,214,160,0.2); }
+.tag-faune { background: rgba(255,209,102,0.12); color: var(--sun); border: 1px solid rgba(255,209,102,0.2); }
+.tag-nuit { background: rgba(199,125,255,0.12); color: var(--purple); border: 1px solid rgba(199,125,255,0.2); }
+.tag-route { background: rgba(255,107,107,0.12); color: var(--coral); border: 1px solid rgba(255,107,107,0.2); }
+.tag-croc { background: rgba(255,107,107,0.15); color: var(--coral); border: 1px solid rgba(255,107,107,0.3); }
+.tag-ile { background: rgba(0,180,216,0.15); color: var(--ocean); border: 1px solid rgba(0,180,216,0.25); }
+.tag-baignade { background: rgba(6,214,160,0.12); color: var(--forest); border: 1px solid rgba(6,214,160,0.2); }
+
+.day-footer {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.night-card {
+  flex: 1;
+  min-width: 200px;
+  background: rgba(199,125,255,0.06);
+  border: 1px solid rgba(199,125,255,0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.night-card .night-icon { font-size: 18px; flex-shrink: 0; }
+.night-card strong { color: var(--purple); font-family: 'Syne', sans-serif; display: block; font-size: 12px; margin-bottom: 2px; }
+
+.dist-card {
+  background: rgba(255,209,102,0.06);
+  border: 1px solid rgba(255,209,102,0.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.dist-card strong { color: var(--sun); font-family: 'Syne', sans-serif; font-size: 16px; }
+
+/* IC BACKGROUNDS */
+.ic-ocean { background: rgba(0,180,216,0.12); }
+.ic-forest { background: rgba(6,214,160,0.12); }
+.ic-sun { background: rgba(255,209,102,0.12); }
+.ic-coral { background: rgba(255,107,107,0.12); }
+.ic-purple { background: rgba(199,125,255,0.12); }
+
+/* TIPS */
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.tip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: border-color .3s;
+}
+.tip:hover { border-color: rgba(0,180,216,0.2); }
+.tip-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.tip h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; font-family: 'Syne', sans-serif; }
+.tip p { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+/* CHECKLIST */
+.checklist { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all .2s;
+  font-size: 13px;
+}
+.check-item:hover { border-color: var(--ocean); }
+.check-item.checked { background: rgba(6,214,160,0.08); border-color: rgba(6,214,160,0.3); color: var(--forest); text-decoration: line-through; opacity: 0.7; }
+.check-box {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  transition: all .2s;
+  background: var(--surface2);
+}
+.check-item.checked .check-box { background: var(--forest); border-color: var(--forest); color: #000; }
+
+/* ANIM DELAYS */
+.day-card:nth-child(1) { animation-delay: .05s; }
+.day-card:nth-child(2) { animation-delay: .10s; }
+.day-card:nth-child(3) { animation-delay: .15s; }
+.day-card:nth-child(4) { animation-delay: .20s; }
+.day-card:nth-child(5) { animation-delay: .25s; }
+.day-card:nth-child(6) { animation-delay: .30s; }
+.day-card:nth-child(7) { animation-delay: .35s; }
+.day-card:nth-child(8) { animation-delay: .40s; }
+.day-card:nth-child(9) { animation-delay: .45s; }
+.day-card:nth-child(10) { animation-delay: .50s; }
+
+@media (max-width: 600px) {
+  .hero { padding: 44px 20px 60px; }
+  .day-header { grid-template-columns: auto 1fr auto; gap: 10px; padding: 16px 18px; }
+  .day-body { padding: 4px 18px 20px; }
+  .stops-timeline { padding-left: 12px; }
+  .stop { grid-template-columns: 38px 1fr; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">🚐 Road Trip Queensland · Version Finale</div>
+  <h1>
+    <span class="accent">Cairns</span> → Brisbane
+    <span class="small">4 avril → 14 avril 2026 · 10 jours · ~1 900 km</span>
+  </h1>
+  <div class="hero-meta">
+    <div class="meta-pill">🚐 Pickup <strong>10h · 55 rue Dutton, Portsmith, Cairns</strong></div>
+    <div class="meta-pill">🏁 Dépôt <strong>fin d'après-midi · 769 Kingsford Smith Dr, Eagle Farm, Brisbane</strong></div>
+  </div>
+  <div class="priorities">
+    <span class="priority-badge p-croc">🐊 Crocodiles</span>
+    <span class="priority-badge p-whit">🏝 Whitsundays</span>
+    <span class="priority-badge p-casc">💧 Cascades</span>
+    <span class="priority-badge p-faun">🦘 Faune</span>
+    <span class="priority-badge p-plage">🌊 Plages sauvages</span>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="summary-grid" style="margin-top:40px;">
+    <div class="stat-card">
+      <div class="stat-emoji">📅</div>
+      <div class="stat-value" style="color:var(--ocean)">10</div>
+      <div class="stat-label">Jours de van</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">🛣️</div>
+      <div class="stat-value" style="color:var(--sun)">~1 900</div>
+      <div class="stat-label">Kilomètres</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">🐊</div>
+      <div class="stat-value" style="color:var(--coral)">3</div>
+      <div class="stat-label">Spots crocodiles</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">💧</div>
+      <div class="stat-value" style="color:var(--forest)">4</div>
+      <div class="stat-label">Cascades & gorges</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">🏖️</div>
+      <div class="stat-value" style="color:var(--ocean)">8+</div>
+      <div class="stat-label">Plages sauvages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-emoji">🦘</div>
+      <div class="stat-value" style="color:var(--sun)">5</div>
+      <div class="stat-label">Espèces sauvages</div>
+    </div>
+  </div>
+
+  <div class="section-title">Itinéraire jour par jour</div>
+  <div id="daysContainer"></div>
+
+  <div class="section-title">Conseils pratiques</div>
+  <div class="tips-grid">
+    <div class="tip">
+      <div class="tip-icon">🐊</div>
+      <div>
+        <h4>Crocodiles — règle d'or</h4>
+        <p>Ne jamais nager en dehors des zones balisées au nord de Mackay. Les panneaux "Croc Warning" sont sérieux. Observer depuis les berges ou depuis un bateau guidé.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">⛵</div>
+      <div>
+        <h4>Whitsundays — réserver en avance</h4>
+        <p>Réserve l'excursion Whitehaven Beach dès maintenant sur <strong>whitsundaysailing.com.au</strong> ou <strong>airliecharter.com.au</strong>. Avril = pleine saison, ça se remplit vite.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">🦘</div>
+      <div>
+        <h4>Pas de conduite de nuit</h4>
+        <p>Impératif absolu. Les kangourous, vaches et wombats bondissent sur la route après le coucher du soleil. Règle : sois garé avant 18h30.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">⛽</div>
+      <div>
+        <h4>Carburant</h4>
+        <p>Fais le plein à chaque grande ville. Les stations sont rares entre Bowen et Mackay. Budget ~2,00 AUD/L, consommation ~12L/100km.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">📱</div>
+      <div>
+        <h4>Réseau & applis</h4>
+        <p>SIM Telstra prépayée à Cairns (meilleure couverture rurale). Apps utiles : <strong>WikiCamps</strong> pour les campings, <strong>GasBuddy</strong> pour les prix du carburant.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">🌡️</div>
+      <div>
+        <h4>Météo avril</h4>
+        <p>Fin de saison des pluies dans le Queensland tropical. Quelques averses possibles au nord. Dès Airlie Beach vers le sud, temps sec et chaud garanti (~28°C).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Checklist départ van</div>
+  <div class="checklist" id="checklist"></div>
+
+</div>
+
+<script>
+const days = [
+  {
+    date: "4 avril", day: "J1",
+    title: "Pickup van → Daintree River 🐊",
+    route: "Portsmith, Cairns → Daintree → Cape Tribulation",
+    km: "~180 km",
+    stops: [
+      { icon: "🚐", bg: "ic-forest", time: "10h00", name: "Pickup van — 55 rue Dutton, Portsmith", desc: "Inspection complète du véhicule avec l'agence (1h). Fais le plein à Cairns avant de prendre la Captain Cook Highway vers le nord. Direction Daintree !", tags: ["route"], priority: false },
+      { icon: "🐊", bg: "ic-coral", time: "13h00", name: "Daintree River — Croisière crocodiles sauvages", desc: "LA priorité du trip. La Daintree abrite la plus forte densité de crocodiles d'eau salée d'Australie. Les guides connaissent chaque croc par son territoire. Des spécimens de 4-5m se chauffent à quelques mètres du bateau. Durée : 1h30. Réserve à l'avance : Solar Whisper ou Bruce Belcher's Daintree River Cruises.", tags: ["croc", "faune", "nature"], priority: true },
+      { icon: "🌿", bg: "ic-forest", time: "15h30", name: "Cape Tribulation", desc: "L'endroit unique au monde où deux UNESCO se rejoignent : la forêt tropicale de Daintree (130M d'années) rencontre directement la mer de Corail. Balade sur la plage, recherche de cassowaries dans la forêt.", tags: ["nature", "plage", "faune"], priority: false }
+    ],
+    night: "Camping Cape Tribulation ou PK's Jungle Village — cadre forêt tropicale incroyable"
+  },
+  {
+    date: "5 avril", day: "J2",
+    title: "Josephine Falls → Mission Beach",
+    route: "Cape Trib → Cairns → Josephine Falls → Mission Beach",
+    km: "~200 km",
+    stops: [
+      { icon: "💧", bg: "ic-ocean", time: "08h00", name: "Josephine Falls — Cascades & toboggan naturel", desc: "Cascades majestueuses au coeur de la forêt tropicale humide. La glissade naturelle sur les rochers polis par l'eau est un incontournable. Baignade dans des bassins turquoise. Prévoir 2-3h. Bonne chaussures de marche.", tags: ["cascade", "baignade", "nature"], priority: true },
+      { icon: "🦅", bg: "ic-sun", time: "12h00", name: "Innisfail — Crocs depuis le pont", desc: "En traversant la ville sur la Bruce Highway, arrêt sur le pont au-dessus de la Johnstone River. Des crocodiles d'eau salée sauvages se reposent sur les berges, visibles à l'oeil nu. Gratuit, 15 min.", tags: ["croc", "faune"], priority: false },
+      { icon: "🌴", bg: "ic-ocean", time: "15h00", name: "Mission Beach", desc: "L'une des plus belles plages du Queensland. Plage de sable blanc bordée de palmiers. Les cassowaries (oiseaux préhistoriques de 1,80m !) se promènent parfois au bord de l'eau au lever du soleil.", tags: ["plage", "faune"], priority: false }
+    ],
+    night: "Camping Mission Beach Hideaway — site directement sur la plage"
+  },
+  {
+    date: "6 avril", day: "J3",
+    title: "Cardwell → Townsville → Magnetic Island",
+    route: "Mission Beach → Cardwell → Townsville",
+    km: "~230 km",
+    stops: [
+      { icon: "🐊", bg: "ic-coral", time: "09h00", name: "Cardwell — Crocs en liberté", desc: "En longeant le front de mer au lever du soleil, des crocodiles d'eau salée sauvages sont régulièrement visibles dans les mangroves. Balade sur le Cardwell Spa Pool — petites piscines naturelles dans la forêt.", tags: ["croc", "faune", "cascade"], priority: true },
+      { icon: "🏙️", bg: "ic-sun", time: "13h00", name: "Townsville — Castle Hill & Strand", desc: "2ème ville du Queensland. Monte au sommet du Castle Hill pour une vue panoramique sur la mer de Corail. Balade sur The Strand, le front de mer animé.", tags: ["nature", "plage"], priority: false },
+      { icon: "⛴️", bg: "ic-ocean", time: "15h30", name: "Option : Magnetic Island (ferry 20 min)", desc: "Si l'heure le permet, ferry rapide pour Magnetic Island. Koalas sauvages dans les eucalyptus (presque garanti), plages désertes, snorkeling. Retour possible le lendemain matin.", tags: ["ile", "faune", "plage"], priority: false }
+    ],
+    night: "Camping Townsville ou Magnetic Island (ferry tôt le lendemain)"
+  },
+  {
+    date: "7 avril", day: "J4",
+    title: "Bowen → Airlie Beach",
+    route: "Townsville → Bowen → Airlie Beach",
+    km: "~280 km",
+    stops: [
+      { icon: "🍹", bg: "ic-sun", time: "10h00", name: "Bowen — Plages cachées", desc: "Petite ville avec 7 plages quasi désertes. Rose Bay et Horseshoe Bay sont les plus belles. Stop idéal pour une baignade matinale. Les murales géantes dans la ville valent aussi le détour.", tags: ["plage", "nature"], priority: false },
+      { icon: "🏝️", bg: "ic-ocean", time: "14h00", name: "Airlie Beach — QG des Whitsundays", desc: "LA base des Whitsundays. Lagon municipal gratuit avec vue mer, bars et restaurants sur Shute Harbour Road. Prépare l'excursion du lendemain. Soirée décontractée au bord de l'eau.", tags: ["plage", "faune"], priority: false }
+    ],
+    night: "Big4 Whitsunday — camping premium avec piscine, bien réserver à l'avance !"
+  },
+  {
+    date: "8 avril", day: "J5",
+    title: "🏝 Whitsundays — Whitehaven Beach",
+    route: "Airlie Beach → Whitehaven Beach (bateau) → Airlie Beach",
+    km: "Van garé — Journée bateau",
+    stops: [
+      { icon: "⛵", bg: "ic-ocean", time: "08h00", name: "Départ catamaran / voilier", desc: "Journée complète en mer. Les excursions partent d'Airlie Beach ou Abel Point Marina. Opérateurs recommandés : Cruise Whitsundays, Whitehaven Xpress ou Camira Sailing.", tags: ["ile", "plage"], priority: false },
+      { icon: "🏖️", bg: "ic-ocean", time: "10h30", name: "Hill Inlet Lookout — La photo iconique", desc: "Le belvédère depuis lequel les tourbillons de sable blanc et d'eau turquoise forment des motifs abstraits extraordinaires. La vue la plus photographiée d'Australie. Y être à marée haute pour les couleurs maximales.", tags: ["ile", "nature"], priority: true },
+      { icon: "🌊", bg: "ic-ocean", time: "12h00", name: "Whitehaven Beach — 7 km de sable de silice", desc: "Classée parmi les 10 plus belles plages du monde. Le sable de silice pur reste frais même en plein soleil, l'eau est d'un turquoise irréel. Baignade, snorkeling sur les coraux.", tags: ["plage", "baignade"], priority: true }
+    ],
+    night: "Retour camping Airlie Beach — ou nuit sur voilier si formule 2 jours (recommandé !)"
+  },
+  {
+    date: "9 avril", day: "J6",
+    title: "Cape Hillsborough → Eungella NP",
+    route: "Airlie Beach → Cape Hillsborough → Mackay → Eungella",
+    km: "~160 km",
+    stops: [
+      { icon: "🦘", bg: "ic-sun", time: "06h00", name: "⚠️ RÉVEIL 5H30 — Kangourous sur la plage", desc: "Cape Hillsborough : des wallabies et kangourous descendent sur la plage au lever du soleil. L'une des scènes les plus insolites d'Australie. Arriver AVANT le lever du soleil (~6h15 en avril). Parking à 5 min de la plage.", tags: ["faune", "plage"], priority: true },
+      { icon: "🦆", bg: "ic-forest", time: "11h00", name: "Eungella NP — Ornithorynques sauvages", desc: "Broken River est l'un des meilleurs spots monde pour voir des ornithorynques. Ces mammifères semi-aquatiques ultra-discrets sortent tôt le matin et en fin d'après-midi. Patience et silence requis. Également : tortues d'eau douce, lézards, oiseaux tropicaux.", tags: ["faune", "nature"], priority: true }
+    ],
+    night: "Broken River Mountain Resort ou camping NP — cadre montagnard à 900m, frais et calme"
+  },
+  {
+    date: "10 avril", day: "J7",
+    title: "Finch Hatton Gorge — Meilleures cascades",
+    route: "Eungella → Finch Hatton Gorge → Rockhampton",
+    km: "~280 km",
+    stops: [
+      { icon: "💦", bg: "ic-forest", time: "08h00", name: "Finch Hatton Gorge — Araluen Cascades & Wheel of Fire", desc: "LE meilleur spot cascade du Queensland. Canyon de forêt tropicale avec deux cascades et bassins naturels magnifiques pour se baigner. Randonnée 4-5h aller-retour dans une jungle dense de moss et fougères géantes. Attention : 4 passages à gué à pied.", tags: ["cascade", "baignade", "nature"], priority: true },
+      { icon: "🐄", bg: "ic-sun", time: "15h00", name: "Rockhampton — Tropique du Capricorne", desc: "La ville est pile sur le Tropique du Capricorne (panneau photo obligatoire !). Capitale australienne du boeuf — steak énorme le soir dans un pub local. Quartier historique Victorian Precinct.", tags: ["route"], priority: false }
+    ],
+    night: "Camping Rockhampton ou Yeppoon (20 min vers la côte — brise marine bienvenue)"
+  },
+  {
+    date: "11 avril", day: "J8",
+    title: "1770 & Agnes Water — Bout du monde",
+    route: "Rockhampton → Bundaberg → Town of 1770",
+    km: "~310 km",
+    stops: [
+      { icon: "🐢", bg: "ic-purple", time: "Matin", name: "Bundaberg — Mon Repos (option)", desc: "En avril les bébés tortues marines peuvent encore être visibles en train de rejoindre l'océan. Réserve une session guidée au Mon Repos Turtle Centre. Non garanti en avril mais ça vaut la tentative.", tags: ["faune", "nature"], priority: false },
+      { icon: "🌊", bg: "ic-ocean", time: "15h00", name: "Town of 1770 & Agnes Water", desc: "Le village le plus au nord de la Gold Coast. Plages sauvages quasi-désertes battues par les vagues, surf, ambiance bout du monde. Coucher de soleil spectaculaire depuis Round Hill Head — vue à 360° sur l'océan.", tags: ["plage", "nature"], priority: true }
+    ],
+    night: "Camping 1770 Beach — l'un des plus beaux campings de la côte, directement sur la plage"
+  },
+  {
+    date: "12 avril", day: "J9",
+    title: "Noosa — Parc national & Sunshine Coast",
+    route: "1770 → Hervey Bay → Noosa",
+    km: "~320 km",
+    stops: [
+      { icon: "🐨", bg: "ic-forest", time: "11h00", name: "Noosa National Park — Koalas sauvages & côte", desc: "Le parc côtier abrite des koalas sauvages dans les eucalyptus (cherche bien dans les branches !). La randonnée côtière de 10 km offre des panoramas sur falaises et criques cachées. Arriver tôt pour le parking.", tags: ["faune", "nature", "plage"], priority: true },
+      { icon: "☕", bg: "ic-sun", time: "14h00", name: "Noosa Heads — Hastings Street", desc: "Le village branché de la Sunshine Coast. Cafés, restaurants, boutiques de luxe. Plage principale de Noosa avec ses eaux calmes protégées. Dernière soirée détendue avant Brisbane.", tags: ["plage", "faune"], priority: false }
+    ],
+    night: "Camping Noosa ou petit hôtel — dernière vraie nuit du trip !"
+  },
+  {
+    date: "13-14 avril", day: "J10",
+    title: "Sunshine Coast → Brisbane → Dépôt van",
+    route: "Noosa → Sunshine Coast → Brisbane Eagle Farm",
+    km: "~150 km",
+    stops: [
+      { icon: "🌅", bg: "ic-ocean", time: "Matin", name: "Dernière plage — Sunshine Coast", desc: "Profite d'une dernière matinée sur les plages de Coolum, Mooloolaba ou Caloundra selon l'humeur. Eaux turquoise et vagues parfaites pour surfer.", tags: ["plage", "baignade"], priority: false },
+      { icon: "🏙️", bg: "ic-sun", time: "13h00", name: "Brisbane — South Bank & déjeuner", desc: "Arrivée à Brisbane. South Bank Parklands, plage artificielle en plein centre-ville. Dernier déjeuner face à la rivière Brisbane.", tags: ["route"], priority: false },
+      { icon: "🏁", bg: "ic-coral", time: "16h00", name: "Dépôt van — 769 Kingsford Smith Drive, Eagle Farm", desc: "Dépôt du van avant la fermeture. À 10 min de l'aéroport de Brisbane. Nettoyage du van recommandé la veille pour éviter des frais de nettoyage (souvent 50-150 AUD). Vol retour Melbourne depuis Brisbane Airport.", tags: ["route"], priority: false }
+    ],
+    night: "Nuit hôtel Brisbane Airport si vol tôt le lendemain"
+  }
+];
+
+const checklistItems = [
+  "Croisière Daintree réservée",
+  "Excursion Whitsundays réservée",
+  "Plein de carburant à Cairns",
+  "SIM Telstra prépayée",
+  "Répulsif DEET anti-moustiques",
+  "Crème solaire SPF50+",
+  "Maillot de bain & serviette sèche-vite",
+  "Chaussures de rando fermées",
+  "App WikiCamps téléchargée",
+  "Lampe frontale (campings)",
+  "Cash AUD (zones rurales)",
+  "Adaptateur prise australienne",
+  "Réveil 5h30 pour J6 (kangourous !)",
+  "Caméra étanche / GoPro"
+];
+
+// Build progress bar
+const pb = document.getElementById('progressBar');
+days.forEach((d, i) => {
+  const item = document.createElement('div');
+  item.className = 'pb-item';
+  item.innerHTML = `
+    <div class="pb-dot" id="pb-${i}" onclick="scrollToDay(${i})">
+      ${i + 1}
+      <span class="pb-tooltip">${d.date}</span>
+    </div>
+    ${i < days.length - 1 ? `<div class="pb-line" id="pbl-${i}"></div>` : ''}
+  `;
+  pb.appendChild(item);
+});
+
+// Build days
+const container = document.getElementById('daysContainer');
+days.forEach((d, i) => {
+  const card = document.createElement('div');
+  card.className = 'day-card';
+  card.id = `day-${i}`;
+
+  const stopsHTML = d.stops.map(s => `
+    <div class="stop${s.priority ? ' priority' : ''}">
+      <div class="stop-icon-wrap">
+        <div class="stop-icon ${s.bg}">${s.icon}</div>
+      </div>
+      <div class="stop-content">
+        ${s.time ? `<div class="stop-time">${s.time}</div>` : ''}
+        <h4>${s.name}</h4>
+        <p>${s.desc}</p>
+        <div class="stop-tags">${s.tags.map(t => `<span class="tag tag-${t}">${t}</span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+
+  card.innerHTML = `
+    <div class="day-header" onclick="toggleDay(${i})">
+      <div class="day-badge">
+        <div class="day-num">${d.day}</div>
+        <div class="day-date">${d.date}</div>
+      </div>
+      <div class="day-title-block">
+        <h3>${d.title}</h3>
+        <div class="route-line">
+          <span>🛣️ ${d.route}</span>
+          <span class="km-badge">🚗 ${d.km}</span>
+        </div>
+      </div>
+      <div class="day-toggle">▼</div>
+    </div>
+    <div class="day-body">
+      <div class="stops-timeline">${stopsHTML}</div>
+      <div class="day-footer">
+        <div class="night-card">
+          <div class="night-icon">🌙</div>
+          <div><strong>Nuit</strong>${d.night}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+});
+
+// Build checklist
+const cl = document.getElementById('checklist');
+checklistItems.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'check-item';
+  div.innerHTML = `<div class="check-box">✓</div><span>${item}</span>`;
+  div.onclick = () => div.classList.toggle('checked');
+  cl.appendChild(div);
+});
+
+function toggleDay(i) {
+  const card = document.getElementById(`day-${i}`);
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  document.querySelectorAll('.pb-dot').forEach((dot, idx) => {
+    dot.classList.remove('active', 'done');
+    if (idx < i) dot.classList.add('done');
+    if (idx === i && !wasOpen) dot.classList.add('active');
+  });
+  document.querySelectorAll('[id^="pbl-"]').forEach((line, idx) => {
+    line.classList.toggle('done', idx < i);
+  });
+}
+
+function scrollToDay(i) {
+  const el = document.getElementById(`day-${i}`);
+  if (!el.classList.contains('open')) toggleDay(i);
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+
+// Open J1 by default
+toggleDay(0);
+</script>
+</body>
+</html>
